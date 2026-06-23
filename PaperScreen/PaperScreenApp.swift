@@ -1,17 +1,12 @@
-//
-//  PaperScreenApp.swift
-//  PaperScreen
-//
-//  Created by anduser on 23.06.2026.
-//
-
 import SwiftUI
 
 @main
 struct PaperScreenApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        Settings {
+            EmptyView()
         }
     }
 }
