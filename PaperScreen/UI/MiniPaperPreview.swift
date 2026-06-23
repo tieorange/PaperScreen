@@ -35,6 +35,9 @@ struct MiniPaperPreview: View {
         case .parchment: return 34_567
         case .frosted: return 45_671
         case .newsprint: return 56_789
+        case .cotton: return 67_890
+        case .riceFibers: return 78_901
+        case .mattePulp: return 89_012
         }
     }
 
@@ -47,22 +50,26 @@ struct MiniPaperPreview: View {
         case .parchment: count = 38
         case .frosted: count = 32
         case .newsprint: count = 64
+        case .cotton: count = 44
+        case .riceFibers: count = 48
+        case .mattePulp: count = 50
         }
 
         for index in 0..<count {
             let x = rng.nextDouble() * size.width
             let y = rng.nextDouble() * size.height
 
-            if style == .longFibers || (style == .parchment && index % 3 == 0) {
+            if style == .longFibers || style == .riceFibers || (style == .parchment && index % 3 == 0) || (style == .cotton && index % 5 == 0) {
                 var path = Path()
                 path.move(to: CGPoint(x: x, y: y))
-                path.addLine(to: CGPoint(x: x + rng.nextDouble() * 28 - 8, y: y + rng.nextDouble() * 10 - 5))
-                context.stroke(path, with: .color(.black.opacity(0.055)), lineWidth: 0.45)
+                let length = style == .riceFibers ? 38.0 : 28.0
+                path.addLine(to: CGPoint(x: x + rng.nextDouble() * length - 8, y: y + rng.nextDouble() * 12 - 6))
+                context.stroke(path, with: .color(.black.opacity(style == .riceFibers ? 0.07 : 0.052)), lineWidth: 0.45)
             } else {
-                let r = rng.nextDouble() * (style == .newsprint ? 1.4 : 1.0) + 0.25
+                let r = rng.nextDouble() * ((style == .newsprint || style == .mattePulp) ? 1.4 : 1.0) + 0.25
                 context.fill(
                     Path(ellipseIn: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2)),
-                    with: .color(.black.opacity(style == .newsprint ? 0.07 : 0.045))
+                    with: .color(.black.opacity((style == .newsprint || style == .mattePulp) ? 0.07 : 0.045))
                 )
             }
         }

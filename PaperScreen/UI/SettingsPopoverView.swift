@@ -24,7 +24,7 @@ struct SettingsPopoverView: View {
                     header
                     comfortStatus
                     presetSection
-                    controlsSection
+                    intensitySection
                     quickActions
                     footer
                 }
@@ -168,15 +168,30 @@ struct SettingsPopoverView: View {
         }
     }
 
-    private var controlsSection: some View {
+    private var intensitySection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionHeader("Surface Tuning", subtitle: "Small adjustments keep the effect comfortable.")
+            sectionHeader("Intensity", subtitle: "100% is the tuned paper default. Push higher for stronger tone and texture.")
 
-            VStack(spacing: 12) {
-                PaperSlider(title: "Intensity", value: $appState.intensity, systemImage: "sun.max.fill", tint: NSColor(hex: "#B47A32"))
-                PaperSlider(title: "Texture", value: $appState.textureStrength, systemImage: "circle.grid.cross.fill", tint: NSColor(hex: "#7B6B4B"))
-                PaperSlider(title: "Warmth", value: $appState.warmth, systemImage: "thermometer.sun.fill", tint: NSColor(hex: "#C06A36"))
-                PaperSlider(title: "Edges", value: $appState.vignetteStrength, systemImage: "rectangle.dashed", tint: NSColor(hex: "#6F604A"))
+            VStack(spacing: 10) {
+                PaperSlider(title: "Paper", value: $appState.intensity, systemImage: "sun.max.fill", tint: NSColor(hex: "#B47A32"), range: 0...2)
+
+                HStack {
+                    Text("Soft")
+                    Spacer()
+                    Text("Default")
+                    Spacer()
+                    Text("Strong")
+                }
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(Color(nsColor: NSColor(hex: "#8A7967")))
+
+                HStack(spacing: 8) {
+                    intensityBadge("\(Int((appState.intensity * 100).rounded()))%")
+                    Text(intensityDescription)
+                        .font(.caption)
+                        .foregroundStyle(Color(nsColor: NSColor(hex: "#806F5E")))
+                    Spacer()
+                }
             }
             .padding(14)
             .paperCard(cornerRadius: 22)
@@ -206,7 +221,7 @@ struct SettingsPopoverView: View {
             .buttonStyle(PaperActionButtonStyle(kind: appState.isPaused ? .primary : .secondary))
 
             Button {
-                appState.resetCurrentPresetControls()
+                appState.resetIntensity()
             } label: {
                 Label("Reset", systemImage: "arrow.counterclockwise")
             }
@@ -282,7 +297,7 @@ struct SettingsPopoverView: View {
             return "Paused for color checks\(appState.pauseRemainingText.map { ", \($0)" } ?? "")."
         }
         if appState.selectedPresetID == "original" { return "No tint or texture is currently applied." }
-        return "Tone, texture, and edges are being applied across your displays."
+        return "Paper style is applied across your displays."
     }
 
     private var statusSymbol: String {
@@ -295,6 +310,26 @@ struct SettingsPopoverView: View {
         if !appState.isEnabled || appState.selectedPresetID == "original" { return .secondary }
         if appState.isPaused { return Color(nsColor: NSColor(hex: "#8C6538")) }
         return Color(nsColor: NSColor(hex: "#4F6933"))
+    }
+
+    private var intensityDescription: String {
+        switch appState.intensity {
+        case ..<0.75:
+            return "A very light paper feel."
+        case ..<1.25:
+            return "Balanced for daily use."
+        default:
+            return "Stronger paper tone and texture."
+        }
+    }
+
+    private func intensityBadge(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 13, weight: .bold, design: .monospaced))
+            .foregroundStyle(Color(nsColor: NSColor(hex: "#6B4D2A")))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Color(nsColor: NSColor(hex: "#F2DFC0")), in: Capsule())
     }
 }
 

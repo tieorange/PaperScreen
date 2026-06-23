@@ -43,6 +43,12 @@ enum PaperTextureFactory {
             drawFrosted(in: context, size: size, rng: &rng)
         case .newsprint:
             drawNewsprint(in: context, size: size, rng: &rng)
+        case .cotton:
+            drawCotton(in: context, size: size, rng: &rng)
+        case .riceFibers:
+            drawRiceFibers(in: context, size: size, rng: &rng)
+        case .mattePulp:
+            drawMattePulp(in: context, size: size, rng: &rng)
         }
 
         guard let cgImage = context.makeImage() else { return nil }
@@ -57,6 +63,9 @@ enum PaperTextureFactory {
         case .parchment: return 3_456_789
         case .frosted: return 4_567_890
         case .newsprint: return 5_678_901
+        case .cotton: return 6_789_012
+        case .riceFibers: return 7_890_123
+        case .mattePulp: return 8_901_234
         }
     }
 
@@ -177,6 +186,86 @@ enum PaperTextureFactory {
             let alpha = rng.nextDouble() * 0.05 + 0.005
             ctx.setFillColor(NSColor(srgbRed: 0.25, green: 0.25, blue: 0.25, alpha: alpha).cgColor)
             ctx.fillEllipse(in: CGRect(x: x, y: y, width: w, height: h))
+        }
+    }
+
+    private static func drawCotton(in ctx: CGContext, size: Int, rng: inout SeededRNG) {
+        for _ in 0..<90 {
+            let x = rng.nextDouble() * Double(size)
+            let y = rng.nextDouble() * Double(size)
+            let r = rng.nextDouble() * 28 + 12
+            let alpha = rng.nextDouble() * 0.018 + 0.004
+            ctx.setFillColor(NSColor(srgbRed: 0.82, green: 0.76, blue: 0.64, alpha: alpha).cgColor)
+            ctx.fillEllipse(in: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2))
+        }
+
+        for _ in 0..<1700 {
+            let x = rng.nextDouble() * Double(size)
+            let y = rng.nextDouble() * Double(size)
+            let r = rng.nextDouble() * 0.55 + 0.18
+            let alpha = rng.nextDouble() * 0.025 + 0.004
+            ctx.setFillColor(NSColor(srgbRed: 0.62, green: 0.55, blue: 0.43, alpha: alpha).cgColor)
+            ctx.fillEllipse(in: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2))
+        }
+
+        ctx.setLineWidth(0.28)
+        for _ in 0..<75 {
+            let x = rng.nextDouble() * Double(size)
+            let y = rng.nextDouble() * Double(size)
+            let angle = rng.nextDouble() * .pi
+            let length = rng.nextDouble() * 18 + 5
+            let alpha = rng.nextDouble() * 0.022 + 0.004
+            ctx.setStrokeColor(NSColor(srgbRed: 0.58, green: 0.51, blue: 0.39, alpha: alpha).cgColor)
+            ctx.move(to: CGPoint(x: x, y: y))
+            ctx.addLine(to: CGPoint(x: x + cos(angle) * length, y: y + sin(angle) * length))
+            ctx.strokePath()
+        }
+    }
+
+    private static func drawRiceFibers(in ctx: CGContext, size: Int, rng: inout SeededRNG) {
+        ctx.setLineCap(.round)
+        for _ in 0..<260 {
+            let x = rng.nextDouble() * Double(size)
+            let y = rng.nextDouble() * Double(size)
+            let angle = (rng.nextDouble() - 0.5) * 0.65 + .pi / 2
+            let length = rng.nextDouble() * 95 + 34
+            let alpha = rng.nextDouble() * 0.055 + 0.008
+            ctx.setLineWidth(rng.nextDouble() * 0.45 + 0.18)
+            ctx.setStrokeColor(NSColor(srgbRed: 0.57, green: 0.50, blue: 0.37, alpha: alpha).cgColor)
+            ctx.move(to: CGPoint(x: x, y: y))
+            ctx.addLine(to: CGPoint(x: x + cos(angle) * length, y: y + sin(angle) * length))
+            ctx.strokePath()
+        }
+
+        for _ in 0..<1200 {
+            let x = rng.nextDouble() * Double(size)
+            let y = rng.nextDouble() * Double(size)
+            let r = rng.nextDouble() * 0.45 + 0.12
+            let alpha = rng.nextDouble() * 0.025 + 0.004
+            ctx.setFillColor(NSColor(srgbRed: 0.7, green: 0.62, blue: 0.47, alpha: alpha).cgColor)
+            ctx.fillEllipse(in: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2))
+        }
+    }
+
+    private static func drawMattePulp(in ctx: CGContext, size: Int, rng: inout SeededRNG) {
+        for _ in 0..<4200 {
+            let x = rng.nextDouble() * Double(size)
+            let y = rng.nextDouble() * Double(size)
+            let r = rng.nextDouble() * 0.75 + 0.18
+            let alpha = rng.nextDouble() * 0.04 + 0.006
+            let warm = rng.nextDouble() * 0.12
+            ctx.setFillColor(NSColor(srgbRed: 0.56 + warm, green: 0.47 + warm * 0.6, blue: 0.33, alpha: alpha).cgColor)
+            ctx.fillEllipse(in: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2))
+        }
+
+        for _ in 0..<45 {
+            let x = rng.nextDouble() * Double(size)
+            let y = rng.nextDouble() * Double(size)
+            let rx = rng.nextDouble() * 44 + 18
+            let ry = rng.nextDouble() * 20 + 10
+            let alpha = rng.nextDouble() * 0.022 + 0.004
+            ctx.setFillColor(NSColor(srgbRed: 0.68, green: 0.54, blue: 0.34, alpha: alpha).cgColor)
+            ctx.fillEllipse(in: CGRect(x: x - rx, y: y - ry, width: rx * 2, height: ry * 2))
         }
     }
 }

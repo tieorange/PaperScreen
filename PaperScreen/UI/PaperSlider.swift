@@ -6,6 +6,7 @@ struct PaperSlider: View {
     @Binding var value: Double
     let systemImage: String
     let tint: NSColor
+    var range: ClosedRange<Double> = 0...1
 
     var body: some View {
         VStack(spacing: 7) {
@@ -33,7 +34,7 @@ struct PaperSlider: View {
                     .background(Color.white.opacity(0.54), in: Capsule())
             }
 
-            Slider(value: $value, in: 0...1)
+            Slider(value: $value, in: range)
                 .tint(Color(nsColor: tint))
         }
     }

@@ -11,21 +11,23 @@ struct OverlayView: View {
 
     private var baseOpacity: Double {
         let raw = isDark ? preset.darkOpacity : preset.lightOpacity
-        let reduced = (isDark && appState.reduceEffectInDarkMode) ? raw * 0.65 : raw
-        return reduced * (0.25 + appState.intensity * 1.25)
+        let reduced = (isDark && appState.reduceEffectInDarkMode) ? raw * 0.55 : raw
+        let maximum = isDark ? 0.08 : 0.22
+        return min(reduced * appState.intensity, maximum)
     }
 
     private var textureOpacity: Double {
-        let raw = preset.textureOpacity * appState.textureStrength
-        return (isDark && appState.reduceEffectInDarkMode) ? raw * 0.55 : raw
+        let raw = preset.textureOpacity * appState.intensity
+        let reduced = (isDark && appState.reduceEffectInDarkMode) ? raw * 0.55 : raw
+        return min(reduced, isDark ? 0.10 : 0.20)
     }
 
     private var vignetteOpacity: Double {
-        preset.vignetteOpacity * appState.vignetteStrength * appState.intensity
+        min(preset.vignetteOpacity * appState.intensity, 0.35)
     }
 
     private var adjustedTint: NSColor {
-        blendedTint(base: preset.tint, warmth: appState.warmth)
+        blendedTint(base: preset.tint, warmth: preset.warmthBlend)
     }
 
     var body: some View {

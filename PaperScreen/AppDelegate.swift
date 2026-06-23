@@ -9,6 +9,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var popover: NSPopover?
     var overlayManager: OverlayWindowManager?
     private var cancellables = Set<AnyCancellable>()
+    private var lastStatusSymbolName: String?
+    private var lastStatusTooltip: String?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -47,7 +49,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             pop.performClose(sender)
         } else {
             pop.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-            pop.contentViewController?.view.window?.makeKey()
         }
     }
 
@@ -72,6 +73,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             symbolName = "doc.text.fill"
             tooltip = "PaperScreen: \(appState.selectedPreset.name)"
         }
+
+        guard symbolName != lastStatusSymbolName || tooltip != lastStatusTooltip else { return }
+        lastStatusSymbolName = symbolName
+        lastStatusTooltip = tooltip
 
         let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: tooltip)
         image?.isTemplate = true
