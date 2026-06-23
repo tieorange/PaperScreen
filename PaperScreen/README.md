@@ -22,8 +22,8 @@ It's the useful part of PaperDisplay's preset concept, with a cleaner native UI.
 
 ## Features
 
-- **Six paper presets** — Original, Writing Paper, Xuan Paper, Parchment, Frosted, Newsprint
-- **Live surface controls** — Intensity, Texture, Warmth, Edge vignette
+- **Paper presets** — Original, Writing Paper, Cotton Paper, Xuan Paper, Rice Paper, Parchment, Frosted, Cardstock, Newsprint
+- **One simple control** — Intensity from 0% to 200%
 - **Pause 20 min** — temporarily lift the effect for color-sensitive work
 - **Night Comfort** — one-tap warm preset optimised for late-night use
 - **Compare Original** — toggle to instantly see your display before and after
@@ -41,15 +41,25 @@ It's the useful part of PaperDisplay's preset concept, with a cleaner native UI.
 | Preset | Tint | Feel |
 | --- | --- | --- |
 | **Original** | none | Untouched display |
-| **Writing Paper** | warm cream `#FFFBEA` | Soft everyday surface with fine grain |
-| **Xuan Paper** | near-white `#FFFEF8` | Minimal tint with long fiber texture |
-| **Parchment** | amber `#F3DCA5` | Aged warmth with mottled texture and soft edges |
+| **Writing Paper** | warm cream `#FFF6DA` | Soft everyday surface with fine grain |
+| **Cotton Paper** | soft white `#FFFAEE` | Premium stationery with a calm cotton surface |
+| **Xuan Paper** | near-white `#FFFDF3` | Minimal tint with long fiber texture |
+| **Rice Paper** | translucent cream `#FFFCEF` | Thin handmade paper with visible natural fibers |
+| **Parchment** | amber `#F0D28A` | Aged warmth with mottled texture and soft edges |
 | **Frosted** | white `#FFFFFF` | Cool frosted noise, clean and bright |
-| **Newsprint** | gray `#E9E2D5` | Low-contrast reading feel with visible grain |
+| **Cardstock** | matte cream `#F7E9C8` | Thick low-glare paper surface |
+| **Newsprint** | gray `#E5DDCE` | Low-contrast reading feel with visible grain |
 
 ---
 
 ## Installation
+
+### Download from GitHub Releases
+
+1. Download `PaperScreen-<version>-macOS.dmg` from the latest GitHub Release.
+2. Open the DMG.
+3. Drag `PaperScreen.app` to `Applications`.
+4. Launch PaperScreen from Applications and use the menu bar icon.
 
 ### Build from source
 
@@ -63,6 +73,14 @@ Or from the terminal:
 ```sh
 xcodebuild -project PaperScreen.xcodeproj -scheme PaperScreen -configuration Release build
 ```
+
+Create GitHub Release artifacts:
+
+```sh
+./Scripts/package_release.sh
+```
+
+The script writes a `.dmg` and `.zip` to `dist/`.
 
 > **Requirements:** macOS 13 Ventura or later. No dependencies, no package manager.
 

@@ -2,6 +2,7 @@ import Foundation
 
 enum PaperSettings {
     enum Keys {
+        static let settingsVersion = "settingsVersion"
         static let isEnabled = "isEnabled"
         static let selectedPresetID = "selectedPresetID"
         static let intensity = "intensity"
@@ -11,6 +12,7 @@ enum PaperSettings {
     }
 
     enum Defaults {
+        static let settingsVersion = 2
         static let isEnabled = true
         static let selectedPresetID = "writingPaper"
         static let intensity = 1.0

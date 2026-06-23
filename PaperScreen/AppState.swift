@@ -34,9 +34,12 @@ final class AppState: ObservableObject {
 
     @Published var pauseUntil: Date?
 
+    @Published private var pauseRefreshDate = Date()
+
     private var pauseTimer: Timer?
 
     var isPaused: Bool {
+        _ = pauseRefreshDate
         guard let pauseUntil else { return false }
         return pauseUntil > Date()
     }
@@ -65,13 +68,21 @@ final class AppState: ObservableObject {
 
     init() {
         let ud = UserDefaults.standard
+        let settingsVersion = ud.object(forKey: PaperSettings.Keys.settingsVersion) as? Int ?? 1
         isEnabled = ud.object(forKey: PaperSettings.Keys.isEnabled) as? Bool ?? PaperSettings.Defaults.isEnabled
         selectedPresetID = ud.string(forKey: PaperSettings.Keys.selectedPresetID) ?? PaperSettings.Defaults.selectedPresetID
-        intensity = ud.object(forKey: PaperSettings.Keys.intensity) as? Double ?? PaperSettings.Defaults.intensity
+        if settingsVersion < PaperSettings.Defaults.settingsVersion {
+            intensity = PaperSettings.Defaults.intensity
+        } else {
+            intensity = ud.object(forKey: PaperSettings.Keys.intensity) as? Double ?? PaperSettings.Defaults.intensity
+        }
         reduceEffectInDarkMode = ud.object(forKey: PaperSettings.Keys.reduceEffectInDarkMode) as? Bool ?? PaperSettings.Defaults.reduceEffectInDarkMode
         useHighCoverageLevel = ud.object(forKey: PaperSettings.Keys.useHighCoverageLevel) as? Bool ?? PaperSettings.Defaults.useHighCoverageLevel
         launchAtLogin = SMAppService.mainApp.status == .enabled
         pauseUntil = nil
+        pauseRefreshDate = Date()
+        ud.set(PaperSettings.Defaults.settingsVersion, forKey: PaperSettings.Keys.settingsVersion)
+        ud.set(intensity, forKey: PaperSettings.Keys.intensity)
         ud.set(launchAtLogin, forKey: PaperSettings.Keys.launchAtLogin)
     }
 
@@ -92,6 +103,7 @@ final class AppState: ObservableObject {
         isEnabled = true
         pauseUntil = nil
         pauseTimer?.invalidate()
+        pauseTimer = nil
         intensity = 1.15
         reduceEffectInDarkMode = true
     }
@@ -112,6 +124,7 @@ final class AppState: ObservableObject {
 
     func pause(for minutes: TimeInterval) {
         pauseUntil = Date().addingTimeInterval(minutes * 60)
+        pauseRefreshDate = Date()
         schedulePauseTimer()
     }
 
@@ -119,15 +132,24 @@ final class AppState: ObservableObject {
         pauseTimer?.invalidate()
         pauseTimer = nil
         pauseUntil = nil
+        pauseRefreshDate = Date()
     }
 
     private func schedulePauseTimer() {
         pauseTimer?.invalidate()
         guard let pauseUntil else { return }
-        let interval = max(0.1, pauseUntil.timeIntervalSinceNow)
-        pauseTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
+        guard pauseUntil > Date() else {
+            resumeNow()
+            return
+        }
+        pauseTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
-                self?.resumeNow()
+                guard let self else { return }
+                if self.isPaused {
+                    self.pauseRefreshDate = Date()
+                } else {
+                    self.resumeNow()
+                }
             }
         }
     }
